@@ -44,13 +44,17 @@ static bool OutOfTime(SearchInfo *info) {
     return false;
 }
 
-// Check if current position is a repetition
+// Position is a repetition if it has occured twice since root
+// of search, or three times including positions before root.
 static bool IsRepetition(const Position *pos) {
 
-    // Compare current posKey to posKeys in history, skipping
-    // opponents turns as that wouldn't be a repetition
+    // This positition has occured once (now)
+    int reps = 1;
+
+    // Step back two moves at a time looking for previous occurences
     for (int i = 2; i <= pos->fiftyMove; i += 2)
-        if (pos->key == history(-i).posKey)
+        if (pos->key == history(-i).posKey
+            && (i <= pos->ply || ++reps == 3))
             return true;
 
     return false;
