@@ -159,3 +159,13 @@ bool SqAttacked(const Position *pos, const Square sq, const Color color) {
 
     return false;
 }
+
+Bitboard AttackersOfSq(const Position *pos, const Square sq) {
+
+    return (PawnAttackBB(BLACK, sq) & colorPieceBB(WHITE, PAWN))
+         | (PawnAttackBB(WHITE, sq) & colorPieceBB(BLACK, PAWN))
+         | (AttackBB(KNIGHT, sq, pieceBB(ALL)) & pieceBB(KNIGHT))
+         | (AttackBB(BISHOP, sq, pieceBB(ALL)) & (pieceBB(QUEEN) | pieceBB(BISHOP)))
+         | (AttackBB(ROOK,   sq, pieceBB(ALL)) & (pieceBB(QUEEN) | pieceBB(ROOK)))
+         | (AttackBB(KING,   sq, pieceBB(ALL)) & pieceBB(KING));
+}
