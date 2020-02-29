@@ -23,4 +23,5 @@
 
 extern SearchLimits Limits;
 
+void InitCuckoo();
 void SearchPosition(Position *pos, SearchInfo *info);

@@ -72,6 +72,65 @@ static bool IsRepetition(const Position *pos) {
     return false;
 }
 
+INLINE unsigned Hash1(Key h) { return h & 0x1fff; }
+INLINE unsigned Hash2(Key h) { return (h >> 16) & 0x1fff; }
+
+Key Cuckoo[8192];
+uint16_t CuckooMove[8192];
+
+void InitCuckoo() {
+
+    printf("InitCuckoo start\n");
+
+    int count = 0;
+
+    for (Color c = 0; c < 2; c++)
+        for (PieceType pt = KNIGHT; pt <= KING; pt++) {
+            Piece p = MakePiece(c, pt);
+            for (Square sq1 = A1; sq1 <= H8; sq1++)
+                for (Square sq2 = sq1 + 1; sq2 <= H8; sq2++)
+                    if (AttackBB(pt, sq1, 0) & SquareBB[sq2]) {
+                        uint16_t move = sq1 | (sq2 << 6);
+                        Key key = PieceKeys[p][sq1] ^ PieceKeys[p][sq2] ^ SideKey;
+                        unsigned i = Hash1(key);
+                        while (true) {
+                            Key tmpKey = Cuckoo[i];
+                            Cuckoo[i] = key;
+                            key = tmpKey;
+                            uint16_t tmpMove = CuckooMove[i];
+                            CuckooMove[i] = move;
+                            move = tmpMove;
+                            if (!move) break;
+                            i = (i == Hash1(key)) ? Hash2(key) : Hash1(key);
+                        }
+                        count++;
+                    }
+        }
+    printf("Count should be 3668 is: %d\n", count);
+    assert(count == 3668);
+}
+
+static bool UpcomingRepetition(Position *pos) {
+
+    Key currentKey = pos->history[0].posKey;
+
+    for (int d = 3; d <= pos->rule50; d += 2) {
+
+        Key diff = currentKey ^ pos->history[d].posKey;
+
+        unsigned i;
+        if (   (i = Hash1(diff), Cuckoo[i] == diff) // ‘diff’ is a single move
+            || (i = Hash2(diff), Cuckoo[i] == diff)) {
+
+            uint16_t move = CuckooMove[i];
+
+            if (!(BetweenBB[fromSq(move)][toSq(move)] & pieceBB(ALL))) // Move is legal here (no obstruction)
+                return true;
+        }
+    }
+    return false;
+}
+
 // Get ready to start a search
 static void ClearForSearch(Position *pos, SearchInfo *info) {
 
@@ -236,6 +295,16 @@ static int AlphaBeta(int alpha, int beta, Depth depth, Position *pos, SearchInfo
 
     const bool pvNode = alpha != beta - 1;
     const bool root   = pos->ply == 0;
+
+    if (   pos->rule50 >= 3
+        && alpha < 0
+        && !root
+        && UpcomingRepetition(pos)) {
+
+        alpha = 0;
+        if (alpha >= beta)
+            return alpha;
+    }
 
     PV pvFromHere;
     pv->length = 0;

@@ -31,6 +31,7 @@ Magic RookTable[64];
 Bitboard PseudoAttacks[TYPE_NB][64];
 Bitboard PawnAttacks[2][64];
 
+Bitboard BetweenBB[64][64];
 
 // Helper function that returns a bitboard with the landing square of
 // the step, or an empty bitboard if the step would go outside the board
@@ -129,6 +130,14 @@ CONSTR InitAttacks() {
     InitSliderAttacks(BishopTable, BishopAttacks, BishopMagics, BSteps);
     InitSliderAttacks(  RookTable,   RookAttacks,   RookMagics, RSteps);
 #endif
+
+    for (Square sq1 = 0; sq1 < 64; sq1++) {
+        for (PieceType pt = BISHOP; pt <= ROOK; pt++)
+            for (Square sq2 = 0; sq2 < 64; sq2++) {
+                if (AttackBB(pt, sq1, SquareBB[sq2]) & SquareBB[sq2])
+                    BetweenBB[sq1][sq2] = AttackBB(pt, sq1, SquareBB[sq2]) & AttackBB(pt, sq2, SquareBB[sq1]);
+            }
+    }
 }
 
 // Returns true if sq is attacked by color

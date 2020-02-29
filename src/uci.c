@@ -183,6 +183,7 @@ int main(int argc, char **argv) {
     SearchInfo info[1];
     TT.currentMB = 0;
     TT.requestedMB = DEFAULTHASH;
+    InitCuckoo();
 
     // Benchmark
     if (argc > 1 && strstr(argv[1], "bench")) {

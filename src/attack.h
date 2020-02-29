@@ -82,6 +82,7 @@ extern Magic RookTable[64];
 extern Bitboard PseudoAttacks[8][64];
 extern Bitboard PawnAttacks[2][64];
 
+extern Bitboard BetweenBB[64][64];
 
 // Returns the attack bitboard for a bishop based on what squares are occupied
 INLINE Bitboard BishopAttackBB(const Square sq, Bitboard occupied) {
