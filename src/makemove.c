@@ -143,6 +143,7 @@ void TakeMove(Position *pos) {
     pos->epSquare       = history(0).epSquare;
     pos->rule50         = history(0).rule50;
     pos->castlingRights = history(0).castlingRights;
+    pos->checkers       = history(0).checkers;
 
     // Get the move from history
     const Move move = history(0).move;
@@ -200,6 +201,7 @@ bool MakeMove(Position *pos, const Move move) {
     history(0).epSquare       = pos->epSquare;
     history(0).rule50         = pos->rule50;
     history(0).castlingRights = pos->castlingRights;
+    history(0).checkers       = pos->checkers;
 
     // Increment gamePly, ply and 50mr
     pos->gamePly++;
@@ -278,6 +280,8 @@ bool MakeMove(Position *pos, const Move move) {
         TakeMove(pos);
         return false;
     }
+
+    pos->checkers = Checkers(pos);
 
     assert(PositionOk(pos));
 

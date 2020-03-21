@@ -165,6 +165,7 @@ typedef struct {
     uint8_t rule50;
     uint8_t castlingRights;
     uint8_t padding; // not used
+    Bitboard checkers;
     int eval;
 } History;
 
@@ -173,6 +174,8 @@ typedef struct {
     uint8_t board[64];
     Bitboard pieceBB[TYPE_NB];
     Bitboard colorBB[2];
+
+    Bitboard checkers;
 
     int nonPawnCount[2];
 

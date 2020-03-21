@@ -183,7 +183,7 @@ static int Quiescence(Position *pos, SearchInfo *info, int alpha, const int beta
 
     int futility = score + P_EG;
 
-    const bool inCheck = SqAttacked(pos, Lsb(colorPieceBB(sideToMove, KING)), !sideToMove);
+    const bool inCheck = pos->checkers;
 
     InitNoisyMP(&mp, &list, pos);
 
@@ -236,7 +236,7 @@ static int AlphaBeta(Position *pos, SearchInfo *info, int alpha, int beta, Depth
     MoveList list;
 
     // Extend search if in check
-    const bool inCheck = SqAttacked(pos, Lsb(colorPieceBB(sideToMove, KING)), !sideToMove);
+    const bool inCheck = pos->checkers;
     if (inCheck && depth + 1 < MAXDEPTH) depth++;
 
     // Quiescence at the end of search
