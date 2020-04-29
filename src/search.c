@@ -186,9 +186,9 @@ static int Quiescence(Position *pos, SearchInfo *info, int alpha, const int beta
     if (score > alpha)
         alpha = score;
 
-    int futility = score + P_EG;
+    // int futility = score + P_EG;
 
-    const bool inCheck = KingAttacked(pos, sideToMove);
+    // const bool inCheck = KingAttacked(pos, sideToMove);
 
     InitNoisyMP(&mp, &list, pos);
 
@@ -198,11 +198,13 @@ static int Quiescence(Position *pos, SearchInfo *info, int alpha, const int beta
     Move move;
     while ((move = NextMove(&mp))) {
 
+#if 0
         if (   !inCheck
             && futility + PieceValue[EG][pieceOn(toSq(move))] <= alpha
             && !(  PieceTypeOf(pieceOn(fromSq(move))) == PAWN
                 && RelativeRank(sideToMove, RankOf(toSq(move))) > 5))
             continue;
+#endif
 
         // Recursively search the positions after making the moves, skipping illegal ones
         if (!MakeMove(pos, move)) continue;
