@@ -69,6 +69,7 @@ bool ProbeWDL(const Position *pos, int *score, int *bound) {
     return true;
 }
 
+#if 0
 // Calls fathom to get optimal moves in tablebase positions in root
 bool RootProbe(Position *pos, SearchInfo *info) {
 
@@ -121,3 +122,4 @@ bool RootProbe(Position *pos, SearchInfo *info) {
 
     return true;
 }
+#endif
